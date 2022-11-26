@@ -34,6 +34,9 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.media.AudioAttributesCompat
+import androidx.media.AudioFocusRequestCompat
+import androidx.media.AudioManagerCompat
 import java.io.File
 import java.lang.IllegalArgumentException
 import kotlin.math.roundToInt
@@ -93,9 +96,11 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         Log.v(TAG, "Audio focus changed: $type")
         if (ignoreAudioFocus)
             return@OnAudioFocusChangeListener
+
         when (type) {
             AudioManager.AUDIOFOCUS_LOSS,
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
                 // loss can occur in addition to ducking, so remember the old callback
                 val oldRestore = audioFocusRestore
                 val wasPlayerPaused = player.paused ?: false
@@ -105,13 +110,13 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
                     if (!wasPlayerPaused) player.paused = false
                 }
             }
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                MPVLib.command(arrayOf("multiply", "volume", AUDIO_FOCUS_DUCKING.toString()))
-                audioFocusRestore = {
-                    val inv = 1f / AUDIO_FOCUS_DUCKING
-                    MPVLib.command(arrayOf("multiply", "volume", inv.toString()))
-                }
-            }
+            // AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+            //     MPVLib.command(arrayOf("multiply", "volume", AUDIO_FOCUS_DUCKING.toString()))
+            //     audioFocusRestore = {
+            //         val inv = 1f / AUDIO_FOCUS_DUCKING
+            //         MPVLib.command(arrayOf("multiply", "volume", inv.toString()))
+            //     }
+            // }
             AudioManager.AUDIOFOCUS_GAIN -> {
                 audioFocusRestore()
                 audioFocusRestore = {}
@@ -262,6 +267,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
 
         binding.playbackSeekbar.setOnSeekBarChangeListener(seekBarChangeListener)
 
+        @Suppress("ClickableViewAccessibility")
         player.setOnTouchListener { _, e ->
             if (lockedUI) false else gestures.onTouchEvent(e)
         }
@@ -271,16 +277,24 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
 
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        volumeControlStream = AudioManager.STREAM_MUSIC
+        val playbackAttributes = AudioAttributesCompat.Builder()
+                .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+                .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
+                .build()
 
-        @Suppress("DEPRECATION")
-        val res = audioManager!!.requestAudioFocus(
-                audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN
-        )
-        if (res != AudioManager.AUDIOFOCUS_REQUEST_GRANTED && !ignoreAudioFocus) {
+        val focusRequest = AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(playbackAttributes ?: return)
+                .setWillPauseWhenDucked(true)
+                .setOnAudioFocusChangeListener(audioFocusChangeListener)
+                .build()
+
+        val request = AudioManagerCompat.requestAudioFocus(audioManager!!, focusRequest)
+        if (request != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             Log.w(TAG, "Audio focus not granted")
             onloadCommands.add(arrayOf("set", "pause", "yes"))
         }
+
+        volumeControlStream = AudioManager.STREAM_MUSIC
     }
 
     private fun finishWithResult(code: Int, includeTimePos: Boolean = false) {
@@ -1768,7 +1782,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         // smallest aspect ratio that is considered non-square
         private const val ASPECT_RATIO_MIN = 1.2f // covers 5:4 and up
         // fraction to which audio volume is ducked on loss of audio focus
-        private const val AUDIO_FOCUS_DUCKING = 0.5f
+        // private const val AUDIO_FOCUS_DUCKING = 0.5f
+
         // request codes for invoking other activities
         private const val RCODE_EXTERNAL_AUDIO = 1000
         private const val RCODE_EXTERNAL_SUB = 1001

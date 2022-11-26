@@ -28,13 +28,13 @@ class BackgroundPlaybackService : Service(), MPVLib.EventObserver {
 
     private var cachedMetadata = Utils.AudioMetadata()
     private var paused: Boolean = false
-    private var shouldShowPrevNext: Boolean = false
+    // private var shouldShowPrevNext: Boolean = false
 
     private fun buildNotificationAction(@DrawableRes icon: Int, @StringRes title: Int, intentAction: String): NotificationCompat.Action {
         val intent = NotificationButtonReceiver.createIntent(this, intentAction)
 
         val builder = NotificationCompat.Action.Builder(icon, getString(title), intent)
-        with (builder) {
+        with(builder) {
             setContextual(false)
             setShowsUserInterface(false)
             return build()
@@ -77,19 +77,19 @@ class BackgroundPlaybackService : Service(), MPVLib.EventObserver {
         else
             buildNotificationAction(R.drawable.ic_pause_black_24dp, R.string.btn_pause, "PLAY_PAUSE")
 
-        if (shouldShowPrevNext) {
-            builder.addAction(buildNotificationAction(
-                R.drawable.ic_skip_previous_black_24dp, R.string.dialog_prev, "ACTION_PREV"
-            ))
-            builder.addAction(playPauseAction)
-            builder.addAction(buildNotificationAction(
-                R.drawable.ic_skip_next_black_24dp, R.string.dialog_next, "ACTION_NEXT"
-            ))
-            builder.setStyle(MediaStyle().setShowActionsInCompactView(0, 2))
-        } else {
-            builder.addAction(playPauseAction)
-            builder.setStyle(MediaStyle())
-        }
+        // if (shouldShowPrevNext) {
+        builder.addAction(buildNotificationAction(
+                R.drawable.ic_replay_10, R.string.dialog_prev, "ACTION_PREV"
+        ))
+        builder.addAction(playPauseAction)
+        builder.addAction(buildNotificationAction(
+                R.drawable.ic_forward_10, R.string.dialog_next, "ACTION_NEXT"
+        ))
+        builder.setStyle(MediaStyle().setShowActionsInCompactView(0, 2))
+        // } else {
+        //     builder.addAction(playPauseAction)
+        //     builder.setStyle(MediaStyle())
+        // }
 
         return builder.build()
     }
@@ -101,7 +101,7 @@ class BackgroundPlaybackService : Service(), MPVLib.EventObserver {
 
         cachedMetadata.readAll()
         paused = MPVLib.getPropertyBoolean("pause")
-        shouldShowPrevNext = MPVLib.getPropertyInt("playlist-count") ?: 0 > 1
+        // shouldShowPrevNext = MPVLib.getPropertyInt("playlist-count") ?: 0 > 1
 
         // create notification and turn this into a "foreground service"
 

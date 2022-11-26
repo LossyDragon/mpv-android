@@ -15,8 +15,8 @@ class NotificationButtonReceiver : BroadcastReceiver() {
         // remember to update AndroidManifest.xml too when adding here
         when (intent.action) {
             "$PREFIX.PLAY_PAUSE" -> MPVLib.command(arrayOf("cycle", "pause"))
-            "$PREFIX.ACTION_PREV" -> MPVLib.command(arrayOf("playlist-prev"))
-            "$PREFIX.ACTION_NEXT" -> MPVLib.command(arrayOf("playlist-next"))
+            "$PREFIX.ACTION_PREV" -> MPVLib.command(arrayOf("seek", "-15", "relative+exact"))
+            "$PREFIX.ACTION_NEXT" -> MPVLib.command(arrayOf("seek", "15", "relative+exact"))
         }
     }
 
