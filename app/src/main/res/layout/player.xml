@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <is.xyz.mpv.MPVView
         android:id="@+id/player"
@@ -47,7 +47,8 @@
                     android:textColor="@color/tint_normal"
                     android:textSize="24sp"
                     android:visibility="gone"
-                    tools:text="Song Title" />
+                    tools:text="Song Title"
+                    tools:visibility="visible" />
 
                 <TextView
                     android:id="@+id/minorTitleTextView"
@@ -57,7 +58,8 @@
                     android:textColor="@color/tint_normal"
                     android:textSize="14sp"
                     android:visibility="gone"
-                    tools:text="Artist / Album" />
+                    tools:text="Artist / Album"
+                    tools:visibility="visible" />
 
                 <!-- This one for video title display -->
                 <TextView
@@ -106,7 +108,8 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="100"
                     android:minHeight="24dp"
-                    android:progressBackgroundTint="@color/tint_seekbar_bg" />
+                    android:progressBackgroundTint="@color/tint_seekbar_bg"
+                    tools:progress="50" />
 
                 <TextView
                     android:id="@+id/playbackDurationTxt"
@@ -210,7 +213,8 @@
             android:textSize="36sp"
             android:textStyle="bold"
             android:visibility="gone"
-            tools:text="[gesture]" />
+            tools:text="[gesture]"
+            tools:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/top_controls"
@@ -271,7 +275,8 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_lock_open_24dp" />
+            app:srcCompat="@drawable/ic_lock_open_24dp"
+            tools:visibility="visible" />
 
     </RelativeLayout>
 

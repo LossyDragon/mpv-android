@@ -7,12 +7,12 @@ import android.util.Log
 import `is`.xyz.mpv.MPVLib.mpvFormat.*
 import android.os.Build
 import android.os.Environment
-import android.preference.PreferenceManager
 import android.view.*
+import androidx.preference.PreferenceManager
 import kotlin.math.abs
 import kotlin.reflect.KProperty
 
-internal class MPVView(context: Context, attrs: AttributeSet) : SurfaceView(context, attrs), SurfaceHolder.Callback {
+internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceView(context, attrs), SurfaceHolder.Callback {
     fun initialize(configDir: String) {
         MPVLib.create(this.context)
         MPVLib.setOptionString("config", "yes")
