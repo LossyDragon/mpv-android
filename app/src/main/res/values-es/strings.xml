@@ -50,7 +50,7 @@
     <string name="toggle_stats">Alternar estadísticas</string>
     <string name="chapter_button">Capítulo</string>
     <string name="sub_seek_button">Desplazarse por subtítulo</string>
-    <string name="file_picker_old">Selector de archivos\n(heredado)</string>
+    <string name="file_picker_old">Selector de archivos (heredado)</string>
     <string name="action_settings">Ajustes</string>
     <string name="action_playlist">Lista de reproducción</string>
     <string name="action_open_url">Abrir URL</string>

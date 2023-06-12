@@ -54,7 +54,7 @@
     <string name="toggle_stats">Statistiche on/off</string>
     <string name="chapter_button">Capitolo</string>
     <string name="sub_seek_button">Cerca per sottotitolo</string>
-    <string name="file_picker_old">Selettore file\n(obsoleto)</string>
+    <string name="file_picker_old">Selettore file (obsoleto)</string>
     <string name="action_settings">Impostazioni</string>
     <string name="action_playlist">Scaletta</string>
     <string name="action_open_url">Apri URL</string>
