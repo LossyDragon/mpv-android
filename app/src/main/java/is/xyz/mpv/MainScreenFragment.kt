@@ -11,17 +11,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.waterfallPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.Folder
@@ -41,8 +44,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -150,6 +156,9 @@ class MainScreenFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.firstRun(savedInstanceState == null)
+
+        // TODO hack to remove Style toolbar until we update it.
+        (activity as AppCompatActivity?)?.supportActionBar?.hide()
     }
 
     override fun onCreateView(
@@ -238,10 +247,11 @@ class MainScreenFragment : Fragment() {
 
         with(PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()) {
             putString("MainScreenFragment_remember", type)
-            if (data == null)
+            if (data == null) {
                 remove("MainScreenFragment_remember_data")
-            else
+            } else {
                 putString("MainScreenFragment_remember_data", data)
+            }
             commit()
         }
     }
@@ -260,8 +270,9 @@ class MainScreenFragment : Fragment() {
             "doc" -> {
                 val uri = Uri.parse(data)
                 // check that we can still access the folder
-                if (!DocumentPickerFragment.isTreeUsable(requireContext(), uri))
+                if (!DocumentPickerFragment.isTreeUsable(requireContext(), uri)) {
                     return
+                }
 
                 Intent(context, FilePickerActivity::class.java).apply {
                     putExtra("skip", FilePickerActivity.DOC_PICKER)
@@ -300,7 +311,7 @@ private fun MainScreen(
     onOpenUrl: () -> Unit,
     onFilePicker: () -> Unit,
     onSettings: () -> Unit,
-    onCheckedChange: (value: Boolean) -> Unit,
+    onCheckedChange: (value: Boolean) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -313,52 +324,66 @@ private fun MainScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize()
-                .waterfallPadding()
-                .padding(paddingValues),
+                .waterfallPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             Box(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(.5f),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     modifier = Modifier.size(256.dp),
                     painter = painterResource(id = R.mipmap.mpv_launcher_foreground),
-                    contentDescription = null,
+                    contentDescription = null
                 )
             }
 
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(24.dp),
+                    .padding(16.dp)
+                    .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom
+                verticalArrangement = Arrangement.Center
             ) {
-                MainScreenButton(
-                    enabled = uiState.isDocumentTreeEnabled,
-                    imageVector = Icons.Filled.FileOpen,
-                    buttonText = stringResource(id = R.string.action_open_doc_tree),
-                    onClick = onDocument
-                )
-                MainScreenButton(
-                    imageVector = Icons.Filled.Link,
-                    buttonText = stringResource(id = R.string.action_open_url),
-                    onClick = onOpenUrl
-                )
-                MainScreenButton(
-                    imageVector = Icons.Filled.Folder,
-                    buttonText = stringResource(id = R.string.file_picker_old),
-                    onClick = onFilePicker
-                )
-                MainScreenButton(
-                    imageVector = Icons.Filled.Settings,
-                    buttonText = stringResource(id = R.string.action_settings),
-                    onClick = onSettings
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    MainScreenButton(
+                        modifier = Modifier.weight(1f),
+                        enabled = uiState.isDocumentTreeEnabled,
+                        imageVector = Icons.Filled.FileOpen,
+                        buttonText = stringResource(id = R.string.action_open_doc_tree),
+                        onClick = onDocument
+                    )
+                    MainScreenButton(
+                        modifier = Modifier.weight(1f),
+                        imageVector = Icons.Filled.Link,
+                        buttonText = stringResource(id = R.string.action_open_url),
+                        onClick = onOpenUrl
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    MainScreenButton(
+                        modifier = Modifier.weight(1f),
+                        imageVector = Icons.Filled.Folder,
+                        buttonText = stringResource(id = R.string.file_picker_old),
+                        onClick = onFilePicker
+                    )
+                    MainScreenButton(
+                        modifier = Modifier.weight(1f),
+                        imageVector = Icons.Filled.Settings,
+                        buttonText = stringResource(id = R.string.action_settings),
+                        onClick = onSettings
+                    )
+                }
 
                 Row(
                     modifier = Modifier
@@ -388,23 +413,38 @@ private fun MainScreenButton(
     imageVector: ImageVector,
     contentDescription: String? = null,
     buttonText: String,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Button(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(12.dp)
+            .aspectRatio(1f),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colorResource(id = R.color.primary),
+            contentColor = Color.White
+        ),
         enabled = enabled,
-        onClick = onClick
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Icon(
-            modifier = Modifier.size(ButtonDefaults.IconSize),
-            contentDescription = contentDescription,
-            imageVector = imageVector,
-            tint = Color.White,
-        )
-        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text(text = buttonText)
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                modifier = Modifier.size(48.dp),
+                contentDescription = contentDescription,
+                imageVector = imageVector
+            )
+            Spacer(Modifier.size(8.dp))
+            Text(
+                fontWeight = FontWeight.SemiBold,
+                text = buttonText,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

@@ -11,6 +11,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +26,7 @@ import `is`.xyz.mpv.compose.theme.MPVTheme
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier,
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
     actions: @Composable RowScope.() -> Unit = {},
     navigationIcon: @Composable () -> Unit = {},
     title: @Composable () -> Unit,
@@ -31,6 +34,7 @@ fun TopBar(
 ) {
     TopAppBar(
         modifier = modifier,
+        colors = colors,
         navigationIcon = navigationIcon,
         actions = actions,
         scrollBehavior = scrollBehavior,
