@@ -1,13 +1,15 @@
 package `is`.xyz.mpv
 
-import `is`.xyz.mpv.databinding.DialogSliderBinding
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.SeekBar
 import androidx.annotation.StringRes
+import `is`.xyz.mpv.databinding.DialogSliderBinding
 
 class SliderPickerDialog(
-    private val rangeMin: Double, private val rangeMax: Double, private val intScale: Int,
+    private val rangeMin: Double,
+    private val rangeMax: Double,
+    private val intScale: Int,
     @StringRes private val formatTextRes: Int
 ) : PickerDialog {
     private lateinit var binding: DialogSliderBinding

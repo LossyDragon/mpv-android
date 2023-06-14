@@ -1,13 +1,14 @@
 package `is`.xyz.mpv
 
-import `is`.xyz.mpv.databinding.DialogDecimalBinding
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
+import `is`.xyz.mpv.databinding.DialogDecimalBinding
 
 class DecimalPickerDialog(
-    private val rangeMin: Double, private val rangeMax: Double
+    private val rangeMin: Double,
+    private val rangeMax: Double
 ) : PickerDialog {
     private lateinit var binding: DialogDecimalBinding
 
@@ -21,8 +22,9 @@ class DecimalPickerDialog(
             override fun afterTextChanged(s: Editable?) {
                 val value = s!!.toString().toDoubleOrNull() ?: return
                 val valueBounded = value.coerceIn(rangeMin, rangeMax)
-                if (valueBounded != value)
+                if (valueBounded != value) {
                     binding.editText.setText(valueBounded.toString())
+                }
             }
         })
         binding.btnMinus.setOnClickListener {

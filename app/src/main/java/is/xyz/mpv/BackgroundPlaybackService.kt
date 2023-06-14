@@ -34,7 +34,7 @@ class BackgroundPlaybackService : Service(), MPVLib.EventObserver {
         val intent = NotificationButtonReceiver.createIntent(this, intentAction)
 
         val builder = NotificationCompat.Action.Builder(icon, getString(title), intent)
-        with (builder) {
+        with(builder) {
             setContextual(false)
             setShowsUserInterface(false)
             return build()
@@ -44,14 +44,15 @@ class BackgroundPlaybackService : Service(), MPVLib.EventObserver {
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun buildNotification(): Notification {
         val notificationIntent = Intent(this, MPVActivity::class.java)
-        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
-        else
+        } else {
             PendingIntent.getActivity(this, 0, notificationIntent, 0)
+        }
 
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
 
-        with (builder) {
+        with(builder) {
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             setPriority(NotificationCompat.PRIORITY_LOW)
             setContentTitle(cachedMetadata.formatTitle())
@@ -72,19 +73,28 @@ class BackgroundPlaybackService : Service(), MPVLib.EventObserver {
             b2.recycle(); b1.recycle()
         }
 
-        val playPauseAction = if (paused)
+        val playPauseAction = if (paused) {
             buildNotificationAction(R.drawable.ic_play_arrow_black_24dp, R.string.btn_play, "PLAY_PAUSE")
-        else
+        } else {
             buildNotificationAction(R.drawable.ic_pause_black_24dp, R.string.btn_pause, "PLAY_PAUSE")
+        }
 
         if (shouldShowPrevNext) {
-            builder.addAction(buildNotificationAction(
-                R.drawable.ic_skip_previous_black_24dp, R.string.dialog_prev, "ACTION_PREV"
-            ))
+            builder.addAction(
+                buildNotificationAction(
+                    R.drawable.ic_skip_previous_black_24dp,
+                    R.string.dialog_prev,
+                    "ACTION_PREV"
+                )
+            )
             builder.addAction(playPauseAction)
-            builder.addAction(buildNotificationAction(
-                R.drawable.ic_skip_next_black_24dp, R.string.dialog_next, "ACTION_NEXT"
-            ))
+            builder.addAction(
+                buildNotificationAction(
+                    R.drawable.ic_skip_next_black_24dp,
+                    R.string.dialog_next,
+                    "ACTION_NEXT"
+                )
+            )
             builder.setStyle(MediaStyle().setShowActionsInCompactView(0, 2))
         } else {
             builder.addAction(playPauseAction)
@@ -124,8 +134,9 @@ class BackgroundPlaybackService : Service(), MPVLib.EventObserver {
     override fun eventProperty(property: String) { }
 
     override fun eventProperty(property: String, value: Boolean) {
-        if (property != "pause")
+        if (property != "pause") {
             return
+        }
         paused = value
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -135,18 +146,19 @@ class BackgroundPlaybackService : Service(), MPVLib.EventObserver {
     override fun eventProperty(property: String, value: Long) { }
 
     override fun eventProperty(property: String, value: String) {
-        if (!cachedMetadata.update(property, value))
+        if (!cachedMetadata.update(property, value)) {
             return
+        }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, buildNotification())
     }
 
     override fun event(eventId: Int) {
-        if (eventId == MPVLib.mpvEventId.MPV_EVENT_IDLE)
+        if (eventId == MPVLib.mpvEventId.MPV_EVENT_IDLE) {
             stopSelf()
+        }
     }
-
 
     companion object {
         /* Using this property MPVActivity gives us a thumbnail
@@ -158,12 +170,16 @@ class BackgroundPlaybackService : Service(), MPVLib.EventObserver {
 
         fun createNotificationChannel(context: Context) {
             val manager = NotificationManagerCompat.from(context)
-            val builder = NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL_ID,
-                NotificationManagerCompat.IMPORTANCE_MIN)
-            manager.createNotificationChannel(with (builder) {
-                setName(context.getString(R.string.pref_background_play_title))
-                build()
-            })
+            val builder = NotificationChannelCompat.Builder(
+                NOTIFICATION_CHANNEL_ID,
+                NotificationManagerCompat.IMPORTANCE_MIN
+            )
+            manager.createNotificationChannel(
+                with(builder) {
+                    setName(context.getString(R.string.pref_background_play_title))
+                    build()
+                }
+            )
         }
 
         private const val TAG = "mpv"

@@ -1,21 +1,21 @@
 package `is`.xyz.mpv.config
 
+import android.content.Context
+import android.preference.DialogPreference
+import android.text.method.ScrollingMovementMethod
+import android.util.AttributeSet
+import android.view.View
+import android.widget.TextView
 import `is`.xyz.mpv.BuildConfig
 import `is`.xyz.mpv.MPVLib
 import `is`.xyz.mpv.R
-import android.content.Context
-import android.util.AttributeSet
-import android.preference.DialogPreference
-import android.text.method.ScrollingMovementMethod
-import android.view.View
-import android.widget.TextView
 
 class VersionInfoDialog @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = android.R.attr.dialogPreferenceStyle,
     defStyleRes: Int = 0
-): DialogPreference(context, attrs, defStyleAttr, defStyleRes), MPVLib.LogObserver {
+) : DialogPreference(context, attrs, defStyleAttr, defStyleRes), MPVLib.LogObserver {
     init {
         isPersistent = false
         dialogLayoutResource = R.layout.version_dialog
@@ -41,10 +41,12 @@ class VersionInfoDialog @JvmOverloads constructor(
     }
 
     override fun logMessage(prefix: String, level: Int, text: String) {
-        if (prefix != "cplayer")
+        if (prefix != "cplayer") {
             return
-        if (level == MPVLib.mpvLogLevel.MPV_LOG_LEVEL_V)
+        }
+        if (level == MPVLib.mpvLogLevel.MPV_LOG_LEVEL_V) {
             versionText += text
+        }
         if (text.startsWith("List of enabled features:")) {
             /* stop receiving log messages and populate text field */
             MPVLib.removeLogObserver(this)

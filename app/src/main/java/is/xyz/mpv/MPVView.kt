@@ -1,14 +1,13 @@
 package `is`.xyz.mpv
 
 import android.content.Context
-import android.util.AttributeSet
-import android.util.Log
-
-import `is`.xyz.mpv.MPVLib.mpvFormat.*
 import android.os.Build
 import android.os.Environment
+import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import androidx.preference.PreferenceManager
+import `is`.xyz.mpv.MPVLib.mpvFormat.*
 import kotlin.math.abs
 import kotlin.reflect.KProperty
 
@@ -35,10 +34,11 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context)
 
         // hwdec
-        val hwdec = if (sharedPreferences.getBoolean("hardware_decoding", true))
+        val hwdec = if (sharedPreferences.getBoolean("hardware_decoding", true)) {
             "auto"
-        else
+        } else {
             "no"
+        }
 
         // vo: set display fps as reported by android
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -49,35 +49,39 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
             Log.v(TAG, "Display ${disp.displayId} reports FPS of $refreshRate")
             MPVLib.setOptionString("override-display-fps", refreshRate.toString())
         } else {
-            Log.v(TAG, "Android version too old, disabling refresh rate functionality " +
-                       "(${Build.VERSION.SDK_INT} < ${Build.VERSION_CODES.M})")
+            Log.v(
+                TAG,
+                "Android version too old, disabling refresh rate functionality " +
+                    "(${Build.VERSION.SDK_INT} < ${Build.VERSION_CODES.M})"
+            )
         }
 
         // set non-complex options
         data class Property(val preference_name: String, val mpv_option: String)
 
         val opts = arrayOf(
-                Property("default_audio_language", "alang"),
-                Property("default_subtitle_language", "slang"),
+            Property("default_audio_language", "alang"),
+            Property("default_subtitle_language", "slang"),
 
-                // vo-related
-                Property("video_scale", "scale"),
-                Property("video_scale_param1", "scale-param1"),
-                Property("video_scale_param2", "scale-param2"),
+            // vo-related
+            Property("video_scale", "scale"),
+            Property("video_scale_param1", "scale-param1"),
+            Property("video_scale_param2", "scale-param2"),
 
-                Property("video_downscale", "dscale"),
-                Property("video_downscale_param1", "dscale-param1"),
-                Property("video_downscale_param2", "dscale-param2"),
+            Property("video_downscale", "dscale"),
+            Property("video_downscale_param1", "dscale-param1"),
+            Property("video_downscale_param2", "dscale-param2"),
 
-                Property("video_tscale", "tscale"),
-                Property("video_tscale_param1", "tscale-param1"),
-                Property("video_tscale_param2", "tscale-param2")
+            Property("video_tscale", "tscale"),
+            Property("video_tscale_param1", "tscale-param1"),
+            Property("video_tscale_param2", "tscale-param2")
         )
 
         for ((preference_name, mpv_option) in opts) {
             val preference = sharedPreferences.getString(preference_name, "")
-            if (!preference.isNullOrBlank())
+            if (!preference.isNullOrBlank()) {
                 MPVLib.setOptionString(mpv_option, preference)
+            }
         }
 
         // set more options
@@ -93,11 +97,13 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
         val vidsync = sharedPreferences.getString("video_sync", resources.getString(R.string.pref_video_interpolation_sync_default))
         MPVLib.setOptionString("video-sync", vidsync!!)
 
-        if (sharedPreferences.getBoolean("video_interpolation", false))
+        if (sharedPreferences.getBoolean("video_interpolation", false)) {
             MPVLib.setOptionString("interpolation", "yes")
+        }
 
-        if (sharedPreferences.getBoolean("gpudebug", false))
+        if (sharedPreferences.getBoolean("gpudebug", false)) {
             MPVLib.setOptionString("gpu-debug", "yes")
+        }
 
         if (sharedPreferences.getBoolean("video_fastdecode", false)) {
             MPVLib.setOptionString("vd-lavc-fast", "yes")
@@ -136,42 +142,49 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
     }
 
     fun onPointerEvent(event: MotionEvent): Boolean {
-        assert (event.isFromSource(InputDevice.SOURCE_CLASS_POINTER))
+        assert(event.isFromSource(InputDevice.SOURCE_CLASS_POINTER))
         if (event.actionMasked == MotionEvent.ACTION_SCROLL) {
             val h = event.getAxisValue(MotionEvent.AXIS_HSCROLL)
             val v = event.getAxisValue(MotionEvent.AXIS_VSCROLL)
-            if (abs(h) > 0)
+            if (abs(h) > 0) {
                 MPVLib.command(arrayOf("keypress", if (h < 0) "WHEEL_LEFT" else "WHEEL_RIGHT"))
-            if (abs(v) > 0)
+            }
+            if (abs(v) > 0) {
                 MPVLib.command(arrayOf("keypress", if (v < 0) "WHEEL_DOWN" else "WHEEL_UP"))
+            }
             return true
         }
         return false
     }
 
     fun onKey(event: KeyEvent): Boolean {
-        if (event.action == KeyEvent.ACTION_MULTIPLE)
+        if (event.action == KeyEvent.ACTION_MULTIPLE) {
             return false
-        if (KeyEvent.isModifierKey(event.keyCode))
+        }
+        if (KeyEvent.isModifierKey(event.keyCode)) {
             return false
+        }
 
         var mapped = KeyMapping.map.get(event.keyCode)
         if (mapped == null) {
             // Fallback to produced glyph
             if (!event.isPrintingKey) {
-                if (event.repeatCount == 0)
+                if (event.repeatCount == 0) {
                     Log.d(TAG, "Unmapped non-printable key ${event.keyCode}")
+                }
                 return false
             }
 
             val ch = event.unicodeChar
-            if (ch.and(KeyCharacterMap.COMBINING_ACCENT) != 0)
+            if (ch.and(KeyCharacterMap.COMBINING_ACCENT) != 0) {
                 return false // dead key
+            }
             mapped = ch.toChar().toString()
         }
 
-        if (event.repeatCount > 0)
+        if (event.repeatCount > 0) {
             return true // eat event but ignore it, mpv has its own key repeat
+        }
 
         val mod: MutableList<String> = mutableListOf()
         event.isShiftPressed && mod.add("shift")
@@ -220,9 +233,10 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
 
     data class Track(val mpvId: Int, val name: String)
     var tracks = mapOf<String, MutableList<Track>>(
-            "audio" to arrayListOf(),
-            "video" to arrayListOf(),
-            "sub" to arrayListOf())
+        "audio" to arrayListOf(),
+        "video" to arrayListOf(),
+        "sub" to arrayListOf()
+    )
 
     fun loadTracks() {
         for (list in tracks.values) {
@@ -243,16 +257,19 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
             val lang = MPVLib.getPropertyString("track-list/$i/lang")
             val title = MPVLib.getPropertyString("track-list/$i/title")
 
-            val trackName = if (!lang.isNullOrEmpty() && !title.isNullOrEmpty())
+            val trackName = if (!lang.isNullOrEmpty() && !title.isNullOrEmpty()) {
                 context.getString(R.string.ui_track_title_lang, mpvId, title, lang)
-            else if (!lang.isNullOrEmpty() || !title.isNullOrEmpty())
+            } else if (!lang.isNullOrEmpty() || !title.isNullOrEmpty()) {
                 context.getString(R.string.ui_track_text, mpvId, (lang ?: "") + (title ?: ""))
-            else
+            } else {
                 context.getString(R.string.ui_track, mpvId)
-            tracks.getValue(type).add(Track(
-                    mpvId=mpvId,
-                    name=trackName
-            ))
+            }
+            tracks.getValue(type).add(
+                Track(
+                    mpvId = mpvId,
+                    name = trackName
+                )
+            )
         }
     }
 
@@ -264,7 +281,7 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
         for (i in 0 until count) {
             val filename = MPVLib.getPropertyString("playlist/$i/filename")!!
             val title = MPVLib.getPropertyString("playlist/$i/title")
-            playlist.add(PlaylistItem(index=i, filename=filename, title=title))
+            playlist.add(PlaylistItem(index = i, filename = filename, title = title))
         }
         return playlist
     }
@@ -277,11 +294,13 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
         for (i in 0 until count) {
             val title = MPVLib.getPropertyString("chapter-list/$i/title")
             val time = MPVLib.getPropertyDouble("chapter-list/$i/time")!!
-            chapters.add(Chapter(
-                    index=i,
-                    title=title,
-                    time=time
-            ))
+            chapters.add(
+                Chapter(
+                    index = i,
+                    title = title,
+                    time = time
+                )
+            )
         }
         return chapters
     }
@@ -318,10 +337,11 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
             return v?.toIntOrNull() ?: -1
         }
         operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Int) {
-            if (value == -1)
+            if (value == -1) {
                 MPVLib.setPropertyString(property.name, "no")
-            else
+            } else {
                 MPVLib.setPropertyInt(property.name, value)
+            }
         }
     }
 
@@ -344,8 +364,10 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
     }
 
     fun getRepeat(): Int {
-        return when (MPVLib.getPropertyString("loop-playlist") +
-                MPVLib.getPropertyString("loop-file")) {
+        return when (
+            MPVLib.getPropertyString("loop-playlist") +
+                MPVLib.getPropertyString("loop-file")
+        ) {
             "noinf" -> 2
             "infno" -> 1
             else -> 0
@@ -372,8 +394,9 @@ internal class MPVView(context: Context, attrs: AttributeSet? = null) : SurfaceV
         // it at runtime doesn't do anything.
         val state = getShuffle()
         val newState = if (cycle) state.xor(value) else value
-        if (state == newState)
+        if (state == newState) {
             return
+        }
         MPVLib.command(arrayOf(if (newState) "playlist-shuffle" else "playlist-unshuffle"))
         MPVLib.setPropertyBoolean("shuffle", newState)
     }

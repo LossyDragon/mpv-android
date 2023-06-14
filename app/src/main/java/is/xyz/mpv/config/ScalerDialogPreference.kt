@@ -1,6 +1,5 @@
 package `is`.xyz.mpv.config
 
-import `is`.xyz.mpv.R
 import android.content.Context
 import android.preference.DialogPreference
 import android.util.AttributeSet
@@ -8,13 +7,14 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
+import `is`.xyz.mpv.R
 
 class ScalerDialogPreference @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = android.R.attr.dialogPreferenceStyle,
-        defStyleRes: Int = 0
-): DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = android.R.attr.dialogPreferenceStyle,
+    defStyleRes: Int = 0
+) : DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
     private var entries: Array<String>
 
     init {
@@ -45,8 +45,9 @@ class ScalerDialogPreference @JvmOverloads constructor(
         }
         val va = sharedPreferences.getString(key, "")
         val idx = entries.indexOf(va)
-        if (idx != -1)
+        if (idx != -1) {
             s.setSelection(idx, false)
+        }
 
         // populate EditText's
         e1.setText(sharedPreferences.getString("${key}_param1", ""))
@@ -57,8 +58,9 @@ class ScalerDialogPreference @JvmOverloads constructor(
         super.onDialogClosed(positiveResult)
 
         // save values only if user presses OK
-        if (!positiveResult)
+        if (!positiveResult) {
             return
+        }
 
         val s = myView.findViewById<Spinner>(R.id.scaler)
         val e1 = myView.findViewById<EditText>(R.id.param1)

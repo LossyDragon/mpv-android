@@ -17,7 +17,7 @@ enum class PropertyChange {
     /* Tap gestures */
     SeekFixed,
     PlayPause,
-    Custom,
+    Custom
 }
 
 interface TouchGesturesObserver {
@@ -31,25 +31,29 @@ class TouchGestures(private val observer: TouchGesturesObserver) {
         Down,
         ControlSeek,
         ControlVolume,
-        ControlBright,
+        ControlBright
     }
 
     private var state = State.Up
+
     // relevant movement direction for the current state (0=H, 1=V)
     private var stateDirection = 0
 
     // timestamp of the last tap (ACTION_UP)
     private var lastTapTime = 0L
+
     // when the current gesture began
     private var lastDownTime = 0L
 
     // where user initially placed their finger (ACTION_DOWN)
     private var initialPos = PointF()
+
     // last non-throttled processed position
     private var lastPos = PointF()
 
     private var width: Float = 0f
     private var height: Float = 0f
+
     // minimum movement which triggers a Control state
     private var trigger: Float = 0f
 
@@ -57,9 +61,9 @@ class TouchGestures(private val observer: TouchGesturesObserver) {
     private var gestureHoriz = State.Down
     private var gestureVertLeft = State.Down
     private var gestureVertRight = State.Down
-    private var tapGestureLeft : PropertyChange? = null
-    private var tapGestureCenter : PropertyChange? = null
-    private var tapGestureRight : PropertyChange? = null
+    private var tapGestureLeft: PropertyChange? = null
+    private var tapGestureCenter: PropertyChange? = null
+    private var tapGestureRight: PropertyChange? = null
 
     fun setMetrics(width: Float, height: Float) {
         this.width = width
@@ -94,13 +98,15 @@ class TouchGestures(private val observer: TouchGesturesObserver) {
         if (state == State.Up) {
             lastDownTime = SystemClock.uptimeMillis()
             // 3 is another arbitrary value here that seems good enough
-            if (PointF(lastPos.x - p.x, lastPos.y - p.y).length() > trigger * 3)
+            if (PointF(lastPos.x - p.x, lastPos.y - p.y).length() > trigger * 3) {
                 lastTapTime = 0 // last tap was too far away, invalidate
+            }
             return true
         }
         // discard if any movement gesture took place
-        if (state != State.Down)
+        if (state != State.Down) {
             return false
+        }
 
         val now = SystemClock.uptimeMillis()
         if (now - lastDownTime >= TAP_DURATION) {
@@ -109,12 +115,13 @@ class TouchGestures(private val observer: TouchGesturesObserver) {
         }
         if (now - lastTapTime < TAP_DURATION) {
             // [ Left 28% ] [    Center    ] [ Right 28% ]
-            if (p.x <= width * 0.28f)
+            if (p.x <= width * 0.28f) {
                 tapGestureLeft?.let { sendPropertyChange(it, -1f); return true }
-            else if (p.x >= width * 0.72f)
+            } else if (p.x >= width * 0.72f) {
                 tapGestureRight?.let { sendPropertyChange(it, 1f); return true }
-            else
+            } else {
                 tapGestureCenter?.let { sendPropertyChange(it, 0f); return true }
+            }
             lastTapTime = 0
         } else {
             lastTapTime = now
@@ -125,8 +132,9 @@ class TouchGestures(private val observer: TouchGesturesObserver) {
     private fun processMovement(p: PointF): Boolean {
         // throttle events: only send updates when there's some movement compared to last update
         // 3 here is arbitrary
-        if (PointF(lastPos.x - p.x, lastPos.y - p.y).length() < trigger / 3)
+        if (PointF(lastPos.x - p.x, lastPos.y - p.y).length() < trigger / 3) {
             return false
+        }
         lastPos.set(p)
 
         val dx = p.x - initialPos.x
@@ -145,8 +153,9 @@ class TouchGestures(private val observer: TouchGesturesObserver) {
                     stateDirection = 1
                 }
                 // send Init so that it has a chance to cache values before we start modifying them
-                if (state != State.Down)
+                if (state != State.Down) {
                     sendPropertyChange(PropertyChange.Init, 0f)
+                }
             }
             State.ControlSeek ->
                 sendPropertyChange(PropertyChange.Seek, CONTROL_SEEK_MAX * dr)
@@ -187,22 +196,25 @@ class TouchGestures(private val observer: TouchGesturesObserver) {
     }
 
     fun onTouchEvent(e: MotionEvent): Boolean {
-        if (width == 0f || height == 0f)
+        if (width == 0f || height == 0f) {
             return false
+        }
         var gestureHandled = false
         val point = PointF(e.x, e.y)
         when (e.action) {
             MotionEvent.ACTION_UP -> {
                 gestureHandled = processMovement(point) or processTap(point)
-                if (state != State.Down)
+                if (state != State.Down) {
                     sendPropertyChange(PropertyChange.Finalize, 0f)
+                }
                 state = State.Up
                 return gestureHandled
             }
             MotionEvent.ACTION_DOWN -> {
                 // deadzone on top/bottom
-                if (e.y < height * DEADZONE / 100 || e.y > height * (100 - DEADZONE) / 100)
+                if (e.y < height * DEADZONE / 100 || e.y > height * (100 - DEADZONE) / 100) {
                     return false
+                }
                 processTap(point)
                 initialPos = point
                 lastPos.set(initialPos)

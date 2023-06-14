@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         // ~sfan5, 2022-06-30
 
         if (savedInstanceState == null) {
-            with (supportFragmentManager.beginTransaction()) {
+            with(supportFragmentManager.beginTransaction()) {
                 setReorderingAllowed(true)
                 add(R.id.fragment_container_view, MainScreenFragment())
                 commit()

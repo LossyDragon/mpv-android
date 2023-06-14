@@ -1,6 +1,5 @@
 package `is`.xyz.mpv
 
-import `is`.xyz.mpv.databinding.DialogPlaylistBinding
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.util.Log
@@ -10,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import `is`.xyz.mpv.databinding.DialogPlaylistBinding
 
 internal class PlaylistDialog(private val player: MPVView) {
     private lateinit var binding: DialogPlaylistBinding
@@ -61,10 +61,11 @@ internal class PlaylistDialog(private val player: MPVView) {
         val shuffleState = player.getShuffle()
         binding.shuffleBtn.apply {
             isEnabled = playlist.size > 1
-            imageTintList = if (isEnabled)
+            imageTintList = if (isEnabled) {
                 if (shuffleState) ColorStateList.valueOf(accent) else null
-            else
+            } else {
                 ColorStateList.valueOf(disabled)
+            }
         }
         val repeatState = player.getRepeat()
         binding.repeatBtn.apply {

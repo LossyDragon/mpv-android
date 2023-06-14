@@ -1,17 +1,19 @@
 package `is`.xyz.mpv
 
-import `is`.xyz.mpv.databinding.DialogSliderBinding
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.SeekBar
+import `is`.xyz.mpv.databinding.DialogSliderBinding
 import kotlin.math.max
 
 class SpeedPickerDialog : PickerDialog {
     companion object {
         // Middle point of bar (in progress units)
         private const val HALF = 100.0
+
         // Minimum for <1.0 range (absolute)
         private const val MINIMUM = 0.2
+
         // Scale factor for >=1.0 range (in progress units)
         private const val SCALE_FACTOR = 20.0
     }
@@ -19,17 +21,19 @@ class SpeedPickerDialog : PickerDialog {
     private lateinit var binding: DialogSliderBinding
 
     private fun toSpeed(it: Int): Double {
-        return if (it >= HALF)
+        return if (it >= HALF) {
             (it - HALF) / SCALE_FACTOR + 1.0
-        else
+        } else {
             max(MINIMUM, it / HALF)
+        }
     }
 
     private fun fromSpeed(it: Double): Int {
-        return if (it >= 1.0)
+        return if (it >= 1.0) {
             (HALF + (it - 1.0) * SCALE_FACTOR).toInt()
-        else
+        } else {
             (HALF * max(MINIMUM, it)).toInt()
+        }
     }
 
     override fun buildView(layoutInflater: LayoutInflater): View {

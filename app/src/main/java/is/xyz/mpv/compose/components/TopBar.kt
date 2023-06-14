@@ -27,7 +27,7 @@ fun TopBar(
     actions: @Composable RowScope.() -> Unit = {},
     navigationIcon: @Composable () -> Unit = {},
     title: @Composable () -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
+    scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     TopAppBar(
         modifier = modifier,

@@ -3,7 +3,6 @@ package `is`.xyz.mpv.compose.components
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import `is`.xyz.mpv.compose.theme.MPVTheme
@@ -26,11 +24,12 @@ enum class ScrollButtonVisibility {
     Visible,
     Gone
 }
+
 @Composable
 fun ScrollBackUp(
     modifier: Modifier = Modifier,
     enabled: Boolean,
-    onClicked: () -> Unit,
+    onClicked: () -> Unit
 ) {
     val transition = updateTransition(
         if (enabled) ScrollButtonVisibility.Visible else ScrollButtonVisibility.Gone,
@@ -60,10 +59,11 @@ fun ScrollBackUp(
             text = {
                 Text(text = "Scroll Up")
             },
-            onClick = onClicked,
+            onClick = onClicked
         )
     }
 }
+
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
 private fun ScrollBackUp_Preview() {

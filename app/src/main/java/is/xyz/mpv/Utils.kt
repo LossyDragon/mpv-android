@@ -13,7 +13,6 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.InputType
-import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
@@ -56,39 +55,45 @@ object Utils {
     fun findRealPath(fd: Int): String? {
         var ins: InputStream? = null
         try {
-            val path = File("/proc/self/fd/${fd}").canonicalPath
+            val path = File("/proc/self/fd/$fd").canonicalPath
             if (!path.startsWith("/proc") && File(path).canRead()) {
                 // Double check that we can read it
                 ins = FileInputStream(path)
                 ins.read()
                 return path
             }
-        } catch(e: Exception) { } finally { ins?.close() }
+        } catch (e: Exception) { } finally { ins?.close() }
         return null
     }
 
     fun convertDp(context: Context, dp: Float): Int {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                context.resources.displayMetrics).toInt()
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics
+        ).toInt()
     }
 
     fun prettyTime(d: Int, sign: Boolean = false): String {
-        if (sign)
+        if (sign) {
             return (if (d >= 0) "+" else "-") + prettyTime(abs(d))
+        }
 
         val hours = d / 3600
         val minutes = d % 3600 / 60
         val seconds = d % 60
-        if (hours == 0)
+        if (hours == 0) {
             return "%02d:%02d".format(minutes, seconds)
+        }
         return "%d:%02d:%02d".format(hours, minutes, seconds)
     }
 
     fun getScreenBrightness(activity: Activity): Float? {
         // check if window has brightness set
         val lp = activity.window.attributes
-        if (lp.screenBrightness >= 0f)
+        if (lp.screenBrightness >= 0f) {
             return lp.screenBrightness
+        }
 
         // read system pref: https://stackoverflow.com/questions/4544967/#answer-8114307
         // (doesn't work with auto-brightness mode)
@@ -112,16 +117,18 @@ object Utils {
         val candidates = mutableListOf<String>()
         // check all media dirs, there's usually one on each storage volume
         context.externalMediaDirs.forEach {
-            if (it != null)
+            if (it != null) {
                 candidates.add(it.absolutePath)
+            }
         }
         // go on a journey to find other mounts Google doesn't want us to find
         File("/proc/mounts").forEachLine { line ->
             val path = line.split(' ')[1]
             if (path.startsWith("/proc") || path.startsWith("/sys") ||
                 path.startsWith("/dev") || path.startsWith("/apex")
-            )
+            ) {
                 return@forEachLine
+            }
             candidates.add(path)
         }
 
@@ -130,25 +137,28 @@ object Utils {
             val vol = try {
                 storageManager.getStorageVolume(root)
             } catch (e: SecurityException) { null } ?: continue
-            if (vol.state != Environment.MEDIA_MOUNTED && vol.state != Environment.MEDIA_MOUNTED_READ_ONLY)
+            if (vol.state != Environment.MEDIA_MOUNTED && vol.state != Environment.MEDIA_MOUNTED_READ_ONLY) {
                 continue
+            }
 
             // find the actual root path of that volume
             while (storageManager.getStorageVolume(root.parentFile) == vol) {
                 root = root.parentFile
             }
 
-            if (!list.any { it.path == root })
+            if (!list.any { it.path == root }) {
                 list.add(StoragePath(root, vol.getDescription(context)))
+            }
         }
         return list
     }
 
     fun viewGroupMove(from: ViewGroup, id: Int, to: ViewGroup, toIndex: Int) {
         val view: View? = (0 until from.childCount)
-                .map { from.getChildAt(it) }.firstOrNull { it.id == id }
-        if (view == null)
+            .map { from.getChildAt(it) }.firstOrNull { it.id == id }
+        if (view == null) {
             error("$from does not have child with id=$id")
+        }
         from.removeView(view)
         to.addView(view, if (toIndex >= 0) toIndex else (to.childCount + 1 + toIndex))
     }
@@ -176,10 +186,11 @@ object Utils {
     fun fileBasename(str: String): String {
         val isURL = str.indexOf("://") != -1
         val last = str.replaceBeforeLast('/', "").trimStart('/')
-        return if (isURL)
+        return if (isURL) {
             Uri.decode(last.replaceAfter('?', "").trimEnd('?'))
-        else
+        } else {
             last
+        }
     }
 
     fun visibleChildren(view: View): Int {
@@ -252,8 +263,9 @@ object Utils {
         }
 
         fun update(property: String, value: String): Boolean {
-            if (meta.update(property, value))
+            if (meta.update(property, value)) {
                 return true
+            }
             return false
         }
 
@@ -282,10 +294,11 @@ object Utils {
 
         private fun buildMediaMetadata(includeThumb: Boolean): MediaMetadataCompat {
             // TODO could provide: genre, num_tracks, track_number, year
-            return with (mediaMetadataBuilder) {
+            return with(mediaMetadataBuilder) {
                 putText(MediaMetadataCompat.METADATA_KEY_ALBUM, meta.mediaAlbum)
-                if (includeThumb && BackgroundPlaybackService.thumbnail != null)
+                if (includeThumb && BackgroundPlaybackService.thumbnail != null) {
                     putBitmap(MediaMetadataCompat.METADATA_KEY_ART, BackgroundPlaybackService.thumbnail)
+                }
                 putText(MediaMetadataCompat.METADATA_KEY_ARTIST, meta.mediaArtist)
                 putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration.takeIf { it > 0 } ?: -1)
                 putText(MediaMetadataCompat.METADATA_KEY_TITLE, meta.mediaTitle)
@@ -301,32 +314,33 @@ object Utils {
                 else -> PlaybackStateCompat.STATE_PLAYING
             }
             var actions = PlaybackStateCompat.ACTION_PLAY or
-                    PlaybackStateCompat.ACTION_PLAY_PAUSE or
-                    PlaybackStateCompat.ACTION_PAUSE or
-                    PlaybackStateCompat.ACTION_SET_REPEAT_MODE
-            if (duration > 0)
+                PlaybackStateCompat.ACTION_PLAY_PAUSE or
+                PlaybackStateCompat.ACTION_PAUSE or
+                PlaybackStateCompat.ACTION_SET_REPEAT_MODE
+            if (duration > 0) {
                 actions = actions or PlaybackStateCompat.ACTION_SEEK_TO
+            }
             if (playlistCount > 1) {
                 // we could be very pedantic here but it's probably better to either show both or none
                 actions = actions or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-                        PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
+                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
+                    PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
             }
-            return with (playbackStateBuilder) {
+            return with(playbackStateBuilder) {
                 setState(stateInt, position, 1.0f)
                 setActions(actions)
-                //setActiveQueueItemId(0) TODO
+                // setActiveQueueItemId(0) TODO
                 build()
             }
         }
 
         fun write(session: MediaSessionCompat, includeThumb: Boolean = true) {
-            with (session) {
+            with(session) {
                 setMetadata(buildMediaMetadata(includeThumb))
                 val ps = buildPlaybackState()
                 isActive = ps.state != PlaybackStateCompat.STATE_NONE
                 setPlaybackState(ps)
-                //setQueue(listOf()) TODO
+                // setQueue(listOf()) TODO
             }
         }
     }
@@ -361,8 +375,8 @@ object Utils {
         private fun validate(text: String): Boolean {
             val uri = Uri.parse(text)
             return uri.isHierarchical && !uri.isRelative &&
-                    !(uri.host.isNullOrEmpty() && uri.path.isNullOrEmpty()) &&
-                    PROTOCOLS.contains(uri.scheme)
+                !(uri.host.isNullOrEmpty() && uri.path.isNullOrEmpty()) &&
+                PROTOCOLS.contains(uri.scheme)
         }
 
         fun create(): AlertDialog {
@@ -382,31 +396,31 @@ object Utils {
     // This is used to filter files in the file picker, so it contains just about everything
     // FFmpeg/mpv could possibly read
     val MEDIA_EXTENSIONS = setOf(
-            /* Playlist */
-            "cue", "m3u", "m3u8", "pls", "vlc",
+        /* Playlist */
+        "cue", "m3u", "m3u8", "pls", "vlc",
 
-            /* Audio */
-            "3ga", "3ga2", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "alac",
-            "amr", "ape", "au", "awb", "dsf", "dts", "dts-hd", "dtshd", "eac3", "f4a", "flac",
-            "lpcm", "m1a", "m2a", "m4a", "mk3d", "mka", "mlp", "mp+", "mp1", "mp2", "mp3", "mpa",
-            "mpc", "mpga", "mpp", "oga", "ogg", "opus", "pcm", "ra", "ram", "rax", "shn", "snd",
-            "spx", "tak", "thd", "thd+ac3", "true-hd", "truehd", "tta", "wav", "weba", "wma", "wv",
-            "wvp",
+        /* Audio */
+        "3ga", "3ga2", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "alac",
+        "amr", "ape", "au", "awb", "dsf", "dts", "dts-hd", "dtshd", "eac3", "f4a", "flac",
+        "lpcm", "m1a", "m2a", "m4a", "mk3d", "mka", "mlp", "mp+", "mp1", "mp2", "mp3", "mpa",
+        "mpc", "mpga", "mpp", "oga", "ogg", "opus", "pcm", "ra", "ram", "rax", "shn", "snd",
+        "spx", "tak", "thd", "thd+ac3", "true-hd", "truehd", "tta", "wav", "weba", "wma", "wv",
+        "wvp",
 
-            /* Video / Container */
-            "264", "265", "3g2", "3ga", "3gp", "3gp2", "3gpp", "3gpp2", "3iv", "amr", "asf",
-            "asx", "av1", "avc", "avf", "avi", "bdm", "bdmv", "clpi", "cpi", "divx", "dv", "evo",
-            "evob", "f4v", "flc", "fli", "flic", "flv", "gxf", "h264", "h265", "hdmov", "hdv",
-            "hevc", "lrv", "m1u", "m1v", "m2t", "m2ts", "m2v", "m4u", "m4v", "mkv", "mod", "moov",
-            "mov", "mp2", "mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg2", "mpeg4", "mpg", "mpg4",
-            "mpl", "mpls", "mpv", "mpv2", "mts", "mtv", "mxf", "mxu", "nsv", "nut", "ogg", "ogm",
-            "ogv", "ogx", "qt", "qtvr", "rm", "rmj", "rmm", "rms", "rmvb", "rmx", "rv", "rvx",
-            "sdp", "tod", "trp", "ts", "tsa", "tsv", "tts", "vc1", "vfw", "vob", "vro", "webm",
-            "wm", "wmv", "wmx", "x264", "x265", "xvid", "y4m", "yuv",
+        /* Video / Container */
+        "264", "265", "3g2", "3ga", "3gp", "3gp2", "3gpp", "3gpp2", "3iv", "amr", "asf",
+        "asx", "av1", "avc", "avf", "avi", "bdm", "bdmv", "clpi", "cpi", "divx", "dv", "evo",
+        "evob", "f4v", "flc", "fli", "flic", "flv", "gxf", "h264", "h265", "hdmov", "hdv",
+        "hevc", "lrv", "m1u", "m1v", "m2t", "m2ts", "m2v", "m4u", "m4v", "mkv", "mod", "moov",
+        "mov", "mp2", "mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg2", "mpeg4", "mpg", "mpg4",
+        "mpl", "mpls", "mpv", "mpv2", "mts", "mtv", "mxf", "mxu", "nsv", "nut", "ogg", "ogm",
+        "ogv", "ogx", "qt", "qtvr", "rm", "rmj", "rmm", "rms", "rmvb", "rmx", "rv", "rvx",
+        "sdp", "tod", "trp", "ts", "tsa", "tsv", "tts", "vc1", "vfw", "vob", "vro", "webm",
+        "wm", "wmv", "wmx", "x264", "x265", "xvid", "y4m", "yuv",
 
-            /* Picture */
-            "apng", "bmp", "exr", "gif", "j2c", "j2k", "jfif", "jp2", "jpc", "jpe", "jpeg", "jpg",
-            "jpg2", "png", "tga", "tif", "tiff", "webp",
+        /* Picture */
+        "apng", "bmp", "exr", "gif", "j2c", "j2k", "jfif", "jp2", "jpc", "jpe", "jpeg", "jpg",
+        "jpg2", "png", "tga", "tif", "tiff", "webp"
     )
 
     // cf. AndroidManifest.xml and MPVActivity.resolveUri()

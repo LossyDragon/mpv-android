@@ -1,6 +1,5 @@
 package `is`.xyz.mpv.config
 
-import `is`.xyz.mpv.R
 import android.content.Context
 import android.preference.DialogPreference
 import android.util.AttributeSet
@@ -9,13 +8,14 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Switch
+import `is`.xyz.mpv.R
 
 class InterpolationDialogPreference @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = android.R.attr.dialogPreferenceStyle,
-        defStyleRes: Int = 0
-): DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = android.R.attr.dialogPreferenceStyle,
+    defStyleRes: Int = 0
+) : DialogPreference(context, attrs, defStyleAttr, defStyleRes) {
     private var entries: Array<String>
     private var entryDefault: String
 
@@ -49,8 +49,9 @@ class InterpolationDialogPreference @JvmOverloads constructor(
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         val idx = entries.indexOf(sharedPreferences.getString("${key}_sync", entryDefault))
-        if (idx != -1)
+        if (idx != -1) {
             sp.setSelection(idx, false)
+        }
 
         // set listeners
         sw.setOnCheckedChangeListener { _, state -> ensureSyncMode(state) }
@@ -65,8 +66,9 @@ class InterpolationDialogPreference @JvmOverloads constructor(
 
     override fun onDialogClosed(positiveResult: Boolean) {
         super.onDialogClosed(positiveResult)
-        if (!positiveResult)
+        if (!positiveResult) {
             return
+        }
 
         val sw = myView.findViewById<Switch>(R.id.switch1)
         val sp = myView.findViewById<Spinner>(R.id.video_sync)
@@ -80,8 +82,9 @@ class InterpolationDialogPreference @JvmOverloads constructor(
     // ensure setting consistency when either of switch/spinner changes
 
     private fun ensureSyncMode(interpolationState: Boolean) {
-        if (!interpolationState)
+        if (!interpolationState) {
             return
+        }
         val sp = myView.findViewById<Spinner>(R.id.video_sync)
 
         if (!(sp.selectedItem as String).startsWith("display-")) {
@@ -91,8 +94,9 @@ class InterpolationDialogPreference @JvmOverloads constructor(
     }
 
     private fun ensureInterpolationToggled(syncMode: String) {
-        if (syncMode.startsWith("display-"))
+        if (syncMode.startsWith("display-")) {
             return
+        }
         val sw = myView.findViewById<Switch>(R.id.switch1)
         sw.isChecked = false
     }
