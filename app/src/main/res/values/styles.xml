@@ -24,14 +24,10 @@
     </style>
 
     <!-- duplicated for the sake of PreferenceActivity, which isn't AppCompat -->
-    <style name="FilePickerThemeLegacy" parent="@android:style/Theme.Material">
-        <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorPrimaryDark">@color/primary_dark</item>
-        <item name="android:colorAccent">@color/accent</item>
-        <item name="android:textColorPrimary">@android:color/background_light</item>
-        <item name="android:textColorLink">@android:color/background_light</item>
-
-        <item name="android:alertDialogTheme">@style/FilePickerThemeLegacy.AlertDialog</item>
+    <style name="FilePickerThemeLegacy" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="FilePickerThemeLegacy.AlertDialog" parent="@android:style/Theme.Material.Dialog.Alert">
