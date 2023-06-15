@@ -82,12 +82,12 @@ class SettingsActivity : ComponentActivity() {
                             .padding(paddingValues)
                             .verticalScroll(scrollState)
                     ) {
-                        // SettingsGroupGeneral() // Done
-                        // SettingsGroupVideo() // TODO
-                        // SettingsGroupUserInterface() // Done
-                        SettingsGroupTouchGestures() // TODO in progress
-                        // SettingsGroupDeveloper() // Done
-                        // SettingsGroupAdvanced() // Done
+                        SettingsGroupGeneral()
+                        SettingsGroupVideo()
+                        SettingsGroupUserInterface()
+                        SettingsGroupTouchGestures()
+                        SettingsGroupDeveloper()
+                        SettingsGroupAdvanced()
                     }
                 }
             }

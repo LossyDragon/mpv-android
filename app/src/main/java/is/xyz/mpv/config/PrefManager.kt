@@ -71,15 +71,53 @@ object PrefManager {
             prefs.edit { putString("stats_mode", value) }
         }
 
+    /**
+     * -- Settings Organized below --
+     */
+
+    /**
+     * Gesture Preferences
+     */
     var seek_gesture_smooth: Boolean
         get() = prefs.getBoolean("seek_gesture_smooth", false)
         set(value) {
             prefs.edit { putBoolean("seek_gesture_smooth", value) }
         }
+    var gesture_horiz: String?
+        get() = prefs.getString("gesture_horiz", "seek")
+        set(value) {
+            prefs.edit { putString("gesture_horiz", value) }
+        }
 
-    /**
-     * -- Settings Organized below --
-     */
+    var gesture_vert_left: String?
+        get() = prefs.getString("gesture_vert_left", "bright")
+        set(value) {
+            prefs.edit { putString("gesture_vert_left", value) }
+        }
+
+    var gesture_vert_right: String?
+        get() = prefs.getString("gesture_vert_right", "volume")
+        set(value) {
+            prefs.edit { putString("gesture_vert_right", value) }
+        }
+
+    var gesture_tap_left: String?
+        get() = prefs.getString("gesture_tap_left", "none")
+        set(value) {
+            prefs.edit { putString("gesture_tap_left", value) }
+        }
+
+    var gesture_tap_center: String?
+        get() = prefs.getString("gesture_tap_center", "none")
+        set(value) {
+            prefs.edit { putString("gesture_tap_center", value) }
+        }
+
+    var gesture_tap_right: String?
+        get() = prefs.getString("gesture_tap_right", "none")
+        set(value) {
+            prefs.edit { putString("gesture_tap_right", value) }
+        }
 
     /**
      * UI Preferences
@@ -106,5 +144,86 @@ object PrefManager {
         get() = prefs.getString("no_ui_pause", "audio-only")
         set(value) {
             prefs.edit { putString("no_ui_pause", value) }
+        }
+
+    /**
+     * Video Preferences
+     */
+    var video_scale: String?
+        get() = prefs.getString("video_scale", "")
+        set(value) {
+            prefs.edit { putString("video_scale", value) }
+        }
+
+    var video_scale_param1: String?
+        get() = prefs.getString("video_scale_param1", "")
+        set(value) {
+            prefs.edit { putString("video_scale_param1", value) }
+        }
+
+    var video_scale_param2: String?
+        get() = prefs.getString("video_scale_param2", "")
+        set(value) {
+            prefs.edit { putString("video_scale_param2", value) }
+        }
+
+    var video_downscale: String?
+        get() = prefs.getString("video_downscale", "")
+        set(value) {
+            prefs.edit { putString("video_downscale", value) }
+        }
+
+    var video_downscale_param1: String?
+        get() = prefs.getString("video_downscale_param1", "")
+        set(value) {
+            prefs.edit { putString("video_downscale_param1", value) }
+        }
+
+    var video_downscale_param2: String?
+        get() = prefs.getString("video_downscale_param2", "")
+        set(value) {
+            prefs.edit { putString("video_downscale_param2", value) }
+        }
+
+    var video_debanding: String?
+        get() = prefs.getString("video_debanding", "")
+        set(value) {
+            prefs.edit { putString("video_debanding", value) }
+        }
+
+    var video_tscale: String?
+        get() = prefs.getString("video_tscale", "")
+        set(value) {
+            prefs.edit { putString("video_tscale", value) }
+        }
+
+    var video_tscale_param1: String?
+        get() = prefs.getString("video_tscale_param1", "")
+        set(value) {
+            prefs.edit { putString("video_tscale_param1", value) }
+        }
+
+    var video_tscale_param2: String?
+        get() = prefs.getString("video_tscale_param2", "")
+        set(value) {
+            prefs.edit { putString("video_tscale_param2", value) }
+        }
+
+    var video_fastdecode: Boolean
+        get() = prefs.getBoolean("video_fastdecode", false)
+        set(value) {
+            prefs.edit { putBoolean("video_fastdecode", value) }
+        }
+
+    var video_interpolation: Boolean
+        get() = prefs.getBoolean("video_interpolation", false)
+        set(value) {
+            prefs.edit { putBoolean("video_interpolation", value) }
+        }
+
+    var video_sync: String?
+        get() = prefs.getString("video_sync", "audio")
+        set(value) {
+            prefs.edit { putString("video_sync", value) }
         }
 }
