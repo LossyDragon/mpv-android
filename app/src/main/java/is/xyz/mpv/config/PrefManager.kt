@@ -70,4 +70,41 @@ object PrefManager {
         set(value) {
             prefs.edit { putString("stats_mode", value) }
         }
+
+    var seek_gesture_smooth: Boolean
+        get() = prefs.getBoolean("seek_gesture_smooth", false)
+        set(value) {
+            prefs.edit { putBoolean("seek_gesture_smooth", value) }
+        }
+
+    /**
+     * -- Settings Organized below --
+     */
+
+    /**
+     * UI Preferences
+     */
+    var auto_rotation: String?
+        get() = prefs.getString("auto_rotation", "auto")
+        set(value) {
+            prefs.edit { putString("auto_rotation", value) }
+        }
+
+    var display_media_title: Boolean
+        get() = prefs.getBoolean("display_media_title", false)
+        set(value) {
+            prefs.edit { putBoolean("display_media_title", value) }
+        }
+
+    var bottom_controls: Boolean
+        get() = prefs.getBoolean("bottom_controls", true)
+        set(value) {
+            prefs.edit { putBoolean("bottom_controls", value) }
+        }
+
+    var no_ui_pause: String?
+        get() = prefs.getString("no_ui_pause", "audio-only")
+        set(value) {
+            prefs.edit { putString("no_ui_pause", value) }
+        }
 }

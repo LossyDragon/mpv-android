@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -49,6 +50,8 @@ import java.io.File
 fun TextFieldDialog(
     openDialog: Boolean,
     icon: ImageVector? = null,
+    defaultText: String = "",
+    summary: String? = null,
     hint: String? = null,
     onDismiss: () -> Unit,
     onNegative: () -> Unit,
@@ -61,7 +64,7 @@ fun TextFieldDialog(
         return
     }
 
-    var text by remember { mutableStateOf("") }
+    var text by remember(defaultText) { mutableStateOf(defaultText) }
 
     /**
      * wrapContentHeight and usePlatformDefaultWidth helps with dialog resizing on the fly.
@@ -80,16 +83,26 @@ fun TextFieldDialog(
         },
         title = { Text(text = title) },
         text = {
-            TextField(
-                maxLines = 2,
-                label = {
-                    hint?.let {
-                        Text(text = it)
-                    }
-                },
-                value = text,
-                onValueChange = { text = it }
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                summary?.let {
+                    Text(text = it)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 2,
+                    label = {
+                        hint?.let {
+                            Text(text = it)
+                        }
+                    },
+                    value = text,
+                    onValueChange = { text = it }
+                )
+            }
         },
         confirmButton = {
             TextButton(
