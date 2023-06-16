@@ -9,3 +9,5 @@ obj
 build
 local.properties
 *~
+app/build
+app/default
