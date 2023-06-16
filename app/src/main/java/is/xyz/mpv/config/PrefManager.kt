@@ -15,7 +15,9 @@ object PrefManager {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
     }
 
-    /** General Settings Preferences **/
+    /**
+     * General Preferences
+     */
     var default_file_manager_path: String?
         @SuppressLint("SdCardPath")
         get() = prefs.getString("default_file_manager_path", "/sdcard")
@@ -53,6 +55,9 @@ object PrefManager {
             prefs.edit { putBoolean("save_position", value) }
         }
 
+    /**
+     * Developer Preferences
+     */
     var ignore_audio_focus: Boolean
         get() = prefs.getBoolean("ignore_audio_focus", false)
         set(value) {
@@ -70,10 +75,6 @@ object PrefManager {
         set(value) {
             prefs.edit { putString("stats_mode", value) }
         }
-
-    /**
-     * -- Settings Organized below --
-     */
 
     /**
      * Gesture Preferences

@@ -26,14 +26,10 @@ import `is`.xyz.mpv.compose.components.TextFieldDialog
 @Composable
 fun SettingsGroupGeneral() {
     SettingsGroup(title = { Text(text = stringResource(id = R.string.pref_header_general)) }) {
-        val hardwareDecodingPref =
-            rememberBooleanSettingState(PrefManager.hardware_decoding)
-        val savePositionPref =
-            rememberBooleanSettingState(PrefManager.save_position)
+        val hardwareDecodingPref = rememberBooleanSettingState(PrefManager.hardware_decoding)
+        val savePositionPref = rememberBooleanSettingState(PrefManager.save_position)
 
-        var dialogDefaultFileManagerPathState by remember {
-            mutableStateOf(false)
-        }
+        var dialogDefaultFileManagerPathState by remember { mutableStateOf(false) }
         if (dialogDefaultFileManagerPathState) {
             var dialogDefaultFileManagerPathText by remember(PrefManager.default_file_manager_path) {
                 mutableStateOf(PrefManager.default_file_manager_path.orEmpty())
@@ -74,9 +70,7 @@ fun SettingsGroupGeneral() {
             )
         }
 
-        var isDefaultAudioLanguageDialog by remember {
-            mutableStateOf(false)
-        }
+        var isDefaultAudioLanguageDialog by remember { mutableStateOf(false) }
         var defaultAudioLanguageValue by remember {
             mutableStateOf(PrefManager.default_audio_language.orEmpty())
         }
@@ -96,9 +90,7 @@ fun SettingsGroupGeneral() {
             summary = stringResource(id = R.string.pref_default_audio_language_message)
         )
 
-        var isDefaultSubtitleLanguageDialog by remember {
-            mutableStateOf(false)
-        }
+        var isDefaultSubtitleLanguageDialog by remember { mutableStateOf(false) }
         var defaultSubtitleLanguageValue by remember {
             mutableStateOf(PrefManager.default_subtitle_language.orEmpty())
         }
