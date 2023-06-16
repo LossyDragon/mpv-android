@@ -13,6 +13,7 @@
         <item name="android:textColorPrimary">@android:color/background_light</item>
         <item name="android:textColorLink">@android:color/background_light</item>
     </style>
+
     <style name="FilePickerThemeSpecial" parent="FilePickerTheme">
         <!-- used to draw behind navigation bar -->
         <item name="android:windowTranslucentNavigation">true</item>
@@ -24,7 +25,7 @@
     </style>
 
     <!-- duplicated for the sake of PreferenceActivity, which isn't AppCompat -->
-    <style name="FilePickerThemeLegacy" parent="android:Theme.Material.NoActionBar">
+    <style name="AppComposeTheme" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

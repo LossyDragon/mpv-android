@@ -156,9 +156,6 @@ class MainScreenFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.firstRun(savedInstanceState == null)
-
-        // TODO hack to remove Style toolbar until we update it.
-        (activity as AppCompatActivity?)?.supportActionBar?.hide()
     }
 
     override fun onCreateView(
