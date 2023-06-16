@@ -309,6 +309,7 @@ private fun MainScreen(
     onSettings: () -> Unit,
     onCheckedChange: (value: Boolean) -> Unit
 ) {
+    // TODO: Handle Portrait / LandScape nicely (Landscape seriously wonky)
     Scaffold(
         topBar = {
             TopBar(
