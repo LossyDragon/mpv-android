@@ -17,6 +17,7 @@ import com.alorma.compose.settings.ui.SettingsList
 import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSwitch
 import `is`.xyz.mpv.R
+import `is`.xyz.mpv.compose.utils.annotatedStringResource
 
 @Composable
 fun SettingsGroupTouchGestures() {
@@ -169,8 +170,7 @@ fun SettingsGroupTouchGestures() {
             enabled = false,
             title = { /* Nothing */ },
             subtitle = {
-                // TODO parse bold text
-                Text(text = stringResource(id = R.string.pref_gesture_custom_helptext))
+                Text(text = annotatedStringResource(id = R.string.pref_gesture_custom_helptext))
             },
             onClick = { /* Nothing */ }
         )

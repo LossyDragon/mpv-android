@@ -1,6 +1,5 @@
 package `is`.xyz.mpv.compose.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -92,7 +92,7 @@ fun TextFieldDialog(
         onDismissRequest = onDismiss,
         icon = {
             icon?.let {
-                Image(imageVector = it, contentDescription = null)
+                Icon(imageVector = it, contentDescription = null)
             }
         },
         title = { Text(text = title) },
@@ -427,7 +427,18 @@ fun InterpolationDialog(
                     Spacer(modifier = Modifier.width(16.dp))
                     Switch(
                         checked = interpEnabled,
-                        onCheckedChange = { interpEnabled = it }
+                        onCheckedChange = {
+                            interpEnabled = it
+
+                            if (!interpEnabled) {
+                                return@Switch
+                            }
+
+                            if (!sync.startsWith("display-")) {
+                                val idx = items.indexOfFirst { s -> s.startsWith("display-") }
+                                sync = items[idx]
+                            }
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -474,7 +485,6 @@ fun InterpolationDialog(
             }
         },
         confirmButton = {
-            // TODO: if we enable Interp but still have audio sync, nudge video sync to the first "display-"
             TextButton(onClick = { onPositive(interpEnabled, sync) }) {
                 Text(text = stringResource(id = R.string.dialog_save))
             }
@@ -494,6 +504,7 @@ private fun TextFieldDialog_Preview() {
         Box(modifier = Modifier.fillMaxWidth()) {
             TextFieldDialog(
                 openDialog = true,
+                icon = Icons.Default.Link,
                 onDismiss = { },
                 onNegative = {},
                 onPositive = {},

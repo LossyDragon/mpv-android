@@ -39,7 +39,7 @@ class MainActivity : FragmentActivity() {
                         }
 
                         fragmentContainerView
-                    },
+                    }
                 )
             }
         }

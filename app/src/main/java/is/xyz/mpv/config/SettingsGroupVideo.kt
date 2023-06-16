@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import com.alorma.compose.settings.storage.base.getValue
 import com.alorma.compose.settings.storage.base.rememberBooleanSettingState
 import com.alorma.compose.settings.storage.base.rememberIntSettingState
 import com.alorma.compose.settings.ui.SettingsGroup
@@ -19,6 +18,7 @@ import com.alorma.compose.settings.ui.SettingsSwitch
 import `is`.xyz.mpv.R
 import `is`.xyz.mpv.compose.components.InterpolationDialog
 import `is`.xyz.mpv.compose.components.ScalerDialog
+import `is`.xyz.mpv.compose.utils.annotatedStringResource
 
 @Composable
 fun SettingsGroupVideo() {
@@ -153,11 +153,10 @@ fun SettingsGroupVideo() {
             onClick = { isVideoTScaleDialogShowing = true }
         )
 
-        // TODO handle bold text in summary
         val fastDecodeState = rememberBooleanSettingState()
         SettingsSwitch(
             title = { Text(text = stringResource(id = R.string.pref_video_fastdecode_title)) },
-            subtitle = { Text(text = stringResource(id = R.string.pref_video_fastdecode_summary)) },
+            subtitle = { Text(text = annotatedStringResource(id = R.string.pref_video_fastdecode_summary)) },
             state = fastDecodeState,
             onCheckedChange = {
                 PrefManager.video_fastdecode = it
